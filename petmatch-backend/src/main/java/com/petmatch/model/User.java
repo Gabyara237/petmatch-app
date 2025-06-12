@@ -2,6 +2,8 @@ package com.petmatch.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
@@ -30,5 +32,10 @@ public class User {
     private Role role;
 
     @Column(name = "created_at")
-    private String createdAt;
+    private LocalDateTime createdAt;
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+    }
 }
