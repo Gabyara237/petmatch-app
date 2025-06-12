@@ -16,16 +16,16 @@ public class UserService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-    public UserResponseDTO createUser(UserRequestDTO dto) {
-        if (userRepository.findByEmail(dto.getEmail()).isPresent()) {
+    public UserResponseDTO createUser(UserRequestDTO userRequestDTO) {
+        if (userRepository.findByEmail(userRequestDTO.getEmail()).isPresent()) {
             throw new RuntimeException("Email already in use");
         }
 
         User user = User.builder()
-                .name(dto.getName())
-                .email(dto.getEmail())
-                .password(dto.getPassword())
-                .role(dto.getRole() != null ? dto.getRole() : Role.ADOPTER)
+                .name(userRequestDTO.getName())
+                .email(userRequestDTO.getEmail())
+                .password(passwordEncoder.encode(userRequestDTO.getPassword()))
+                .role(userRequestDTO.getRole() != null ? userRequestDTO.getRole() : Role.ADOPTER)
                 .build();
 
         User savedUser = userRepository.save(user);
