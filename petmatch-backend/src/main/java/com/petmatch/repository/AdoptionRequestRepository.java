@@ -1,6 +1,7 @@
 package com.petmatch.repository;
 
 import com.petmatch.model.AdoptionRequest;
+import com.petmatch.model.Pet;
 import com.petmatch.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -13,6 +14,9 @@ public interface AdoptionRequestRepository extends JpaRepository<AdoptionRequest
     List<AdoptionRequest> findByPetOwner(User owner);
 
     List<AdoptionRequest> findByPetId(UUID petId);
+
+    boolean existsByApplicantAndPet(User applicant, Pet pet);
+
 
 
 }

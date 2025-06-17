@@ -34,6 +34,12 @@ public class AdoptionRequestService {
         Pet pet = petRepository.findById(adoptionRequestDTO.getPetId())
                 .orElseThrow(() -> new EntityNotFoundException("Pet not found"));
 
+
+        if (adoptionRequestRepository.existsByApplicantAndPet(user, pet)) {
+            throw new RuntimeException("You have already requested to adopt this pet.");
+        }
+
+
         AdoptionRequest request = AdoptionRequest.builder()
                 .applicant(user)
                 .pet(pet)
