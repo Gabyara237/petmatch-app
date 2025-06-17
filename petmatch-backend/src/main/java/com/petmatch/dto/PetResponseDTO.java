@@ -18,4 +18,5 @@ public class PetResponseDTO {
     private Integer age;
     private String description;
 
+
 }
