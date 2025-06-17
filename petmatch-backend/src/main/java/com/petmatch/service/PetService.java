@@ -3,9 +3,14 @@ package com.petmatch.service;
 import com.petmatch.dto.PetRequestDTO;
 import com.petmatch.dto.PetResponseDTO;
 import com.petmatch.model.Pet;
+import com.petmatch.model.User;
 import com.petmatch.repository.PetRepository;
+import com.petmatch.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,15 +22,31 @@ import java.util.stream.Collectors;
 public class PetService {
 
     private final PetRepository petRepository;
+    private final UserRepository userRepository;
 
     public PetResponseDTO createPet(PetRequestDTO petRequestDTO){
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Object principal =authentication.getPrincipal();
+
+        if(!(principal instanceof UserDetails userDetails)){
+            throw new RuntimeException("Unauthenticated user");
+        }
+
+        String email = userDetails.getUsername();
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found in the database"));
+
         Pet pet = Pet.builder()
                 .name(petRequestDTO.getName())
                 .age(petRequestDTO.getAge())
                 .type(petRequestDTO.getType())
                 .gender(petRequestDTO.getGender())
+                .breed(petRequestDTO.getBreed())
                 .status("AVAILABLE")
                 .description(petRequestDTO.getDescription())
+                .owner(user)
                 .build();
 
         Pet savedPet = petRepository.save(pet);
