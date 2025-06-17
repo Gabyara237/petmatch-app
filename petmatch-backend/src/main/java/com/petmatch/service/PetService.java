@@ -86,6 +86,13 @@ public class PetService {
         petRepository.deleteById(id);
     }
 
+    public List<PetResponseDTO> getPetsByUserId(UUID userId){
+        return petRepository.findByOwnerId(userId)
+                .stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+    }
+
     private PetResponseDTO mapToResponse(Pet pet) {
         return PetResponseDTO.builder()
                 .id(pet.getId())
@@ -97,5 +104,7 @@ public class PetService {
                 .description(pet.getDescription())
                 .build();
     }
+
+
 
 }
