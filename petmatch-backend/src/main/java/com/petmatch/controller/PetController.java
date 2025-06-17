@@ -2,6 +2,7 @@ package com.petmatch.controller;
 
 import com.petmatch.dto.PetRequestDTO;
 import com.petmatch.dto.PetResponseDTO;
+import com.petmatch.dto.PetStatusUpdateDTO;
 import com.petmatch.service.PetService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -51,4 +52,12 @@ public class PetController {
         return ResponseEntity.noContent().build();
     }
 
+    @PutMapping("/{id}/status")
+    public ResponseEntity<PetResponseDTO> updatePetStatus(
+            @PathVariable UUID id,
+            @RequestBody PetStatusUpdateDTO petStatusUpdateDTO) {
+
+        PetResponseDTO updated = petService.updatePetStatus(id, petStatusUpdateDTO.getStatus());
+        return ResponseEntity.ok(updated);
+    }
 }

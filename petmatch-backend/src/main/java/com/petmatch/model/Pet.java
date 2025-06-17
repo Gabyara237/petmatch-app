@@ -38,8 +38,9 @@ public class Pet {
 
     private String description;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String status;
+    private PetStatus status;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;

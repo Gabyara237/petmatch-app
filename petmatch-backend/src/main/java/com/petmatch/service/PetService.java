@@ -3,6 +3,7 @@ package com.petmatch.service;
 import com.petmatch.dto.PetRequestDTO;
 import com.petmatch.dto.PetResponseDTO;
 import com.petmatch.model.Pet;
+import com.petmatch.model.PetStatus;
 import com.petmatch.model.User;
 import com.petmatch.repository.PetRepository;
 import com.petmatch.repository.UserRepository;
@@ -44,7 +45,7 @@ public class PetService {
                 .type(petRequestDTO.getType())
                 .gender(petRequestDTO.getGender())
                 .breed(petRequestDTO.getBreed())
-                .status("AVAILABLE")
+                .status(PetStatus.AVAILABLE)
                 .description(petRequestDTO.getDescription())
                 .owner(user)
                 .build();
@@ -92,6 +93,17 @@ public class PetService {
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
     }
+
+    public PetResponseDTO updatePetStatus(UUID id, PetStatus newStatus) {
+        Pet pet = petRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Pet not found"));
+
+        pet.setStatus(newStatus);
+        Pet updated = petRepository.save(pet);
+
+        return mapToResponse(updated);
+    }
+
 
     private PetResponseDTO mapToResponse(Pet pet) {
         return PetResponseDTO.builder()
