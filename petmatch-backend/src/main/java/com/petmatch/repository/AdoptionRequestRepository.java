@@ -17,6 +17,9 @@ public interface AdoptionRequestRepository extends JpaRepository<AdoptionRequest
 
     boolean existsByApplicantAndPet(User applicant, Pet pet);
 
+    List<AdoptionRequest> findByPetAndIdNot(Pet pet, UUID id);
+
+
 
 
 }

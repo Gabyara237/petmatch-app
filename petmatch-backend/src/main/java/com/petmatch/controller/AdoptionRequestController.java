@@ -54,4 +54,10 @@ public class AdoptionRequestController {
         return ResponseEntity.ok(requests);
     }
 
+    @PutMapping("/{id}/approve")
+    public ResponseEntity<AdoptionResponseDTO> approveRequest(@PathVariable UUID id) {
+        return ResponseEntity.ok(adoptionService.approveRequest(id));
+    }
+
+
 }

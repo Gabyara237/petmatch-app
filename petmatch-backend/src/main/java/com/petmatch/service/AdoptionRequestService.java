@@ -2,15 +2,13 @@ package com.petmatch.service;
 
 import com.petmatch.dto.AdoptionRequestDTO;
 import com.petmatch.dto.AdoptionResponseDTO;
-import com.petmatch.model.AdoptionRequest;
-import com.petmatch.model.AdoptionStatus;
-import com.petmatch.model.Pet;
-import com.petmatch.model.User;
+import com.petmatch.model.*;
 import com.petmatch.repository.AdoptionRequestRepository;
 import com.petmatch.repository.PetRepository;
 import com.petmatch.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -86,6 +84,42 @@ public class AdoptionRequestService {
                 .map(this::mapToResponseDTO)
                 .toList();
     }
+
+    public AdoptionResponseDTO approveRequest(UUID requestId) {
+        AdoptionRequest request = adoptionRequestRepository.findById(requestId)
+                .orElseThrow(() -> new EntityNotFoundException("Request not found"));
+
+        if (request.getStatus() != AdoptionStatus.PENDING) {
+            throw new IllegalStateException("Only pending requests can be approved");
+        }
+
+        String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        User owner = request.getPet().getOwner();
+
+        if (owner == null || !owner.getEmail().equals(userEmail)) {
+            throw new AccessDeniedException("You are not the owner of this pet");
+        }
+
+        request.setStatus(AdoptionStatus.APPROVED);
+        adoptionRequestRepository.save(request);
+
+        Pet pet = request.getPet();
+        pet.setStatus(PetStatus.ADOPTED);
+        petRepository.save(pet);
+
+        List<AdoptionRequest> otherRequests = adoptionRequestRepository.findByPetAndIdNot(pet, request.getId());
+        for (AdoptionRequest other : otherRequests) {
+            if (other.getStatus() == AdoptionStatus.PENDING) {
+                other.setStatus(AdoptionStatus.REJECTED);
+            }
+        }
+        adoptionRequestRepository.saveAll(otherRequests);
+
+        return mapToResponseDTO(request);
+    }
+
+
 
     private AdoptionResponseDTO mapToResponseDTO(AdoptionRequest request) {
         return AdoptionResponseDTO.builder()
