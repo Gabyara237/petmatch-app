@@ -12,4 +12,7 @@ public interface AdoptionRequestRepository extends JpaRepository<AdoptionRequest
 
     List<AdoptionRequest> findByPetOwner(User owner);
 
+    List<AdoptionRequest> findByPetId(UUID petId);
+
+
 }

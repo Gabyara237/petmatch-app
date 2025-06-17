@@ -48,4 +48,10 @@ public class AdoptionRequestController {
         return ResponseEntity.ok(receivedRequests);
     }
 
+    @GetMapping("/pet/{petId}")
+    public ResponseEntity<List<AdoptionResponseDTO>> getRequestsByPetId(@PathVariable UUID petId) {
+        List<AdoptionResponseDTO> requests = adoptionService.getRequestsByPetId(petId);
+        return ResponseEntity.ok(requests);
+    }
+
 }

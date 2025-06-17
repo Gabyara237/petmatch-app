@@ -93,4 +93,12 @@ public class AdoptionRequestService {
                 .createdAt(request.getCreatedAt())
                 .build();
     }
+
+    public List<AdoptionResponseDTO> getRequestsByPetId(UUID petId) {
+        List<AdoptionRequest> requests = adoptionRequestRepository.findByPetId(petId);
+        return requests.stream()
+                .map(this::mapToResponseDTO)
+                .toList();
+    }
+
 }
