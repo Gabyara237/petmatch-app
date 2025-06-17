@@ -25,9 +25,11 @@ public class Pet {
     private String name;
 
     @Column(nullable = false)
-    private  String species;
+    private  PetType type;
 
     private String breed;
+
+    private String gender;
 
     private Integer age;
 
