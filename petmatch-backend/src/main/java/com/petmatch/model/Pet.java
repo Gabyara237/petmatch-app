@@ -1,5 +1,6 @@
 package com.petmatch.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -43,9 +44,15 @@ public class Pet {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
+    @JsonIgnoreProperties({"pets"})
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User owner;
+
     @PrePersist
     protected void onCreate(){
         this.createdAt = LocalDateTime.now();
     }
+
 
 }
